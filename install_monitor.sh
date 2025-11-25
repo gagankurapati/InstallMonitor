@@ -76,7 +76,7 @@ detect_and_run() {
         echo -e "${GREEN}→ Detected: Existing installation directory${NC}"
         echo -e "${BLUE}→ Using: analyze_existing_install.sh${NC}"
         echo ""
-        exec "${SCRIPT_DIR}/analyze_existing_install.sh" "$input"
+        exec "${SCRIPT_DIR}/scripts/analyze_existing_install.sh" "$input"
     fi
 
     # Check if it's a file
@@ -115,18 +115,18 @@ detect_and_run() {
                 echo -e "${BLUE}→ Using: monitor_run_installer.sh${NC}"
                 echo ""
                 if [ -n "$opts" ]; then
-                    exec "${SCRIPT_DIR}/monitor_run_installer.sh" "$input" "$opts"
+                    exec "${SCRIPT_DIR}/scripts/monitor_run_installer.sh" "$input" "$opts"
                 else
-                    exec "${SCRIPT_DIR}/monitor_run_installer.sh" "$input"
+                    exec "${SCRIPT_DIR}/scripts/monitor_run_installer.sh" "$input"
                 fi
             elif [ $has_install_script -eq 1 ]; then
                 echo -e "${GREEN}→ Found: Shell install script${NC}"
                 echo -e "${BLUE}→ Using: monitor_install.sh${NC}"
                 echo ""
                 if [ -n "$opts" ]; then
-                    exec "${SCRIPT_DIR}/monitor_install.sh" "$input" "$opts"
+                    exec "${SCRIPT_DIR}/scripts/monitor_install.sh" "$input" "$opts"
                 else
-                    exec "${SCRIPT_DIR}/monitor_install.sh" "$input"
+                    exec "${SCRIPT_DIR}/scripts/monitor_install.sh" "$input"
                 fi
             else
                 # Default to regular monitor
@@ -134,9 +134,9 @@ detect_and_run() {
                 echo -e "${BLUE}→ Using: monitor_install.sh (will extract and analyze)${NC}"
                 echo ""
                 if [ -n "$opts" ]; then
-                    exec "${SCRIPT_DIR}/monitor_install.sh" "$input" "$opts"
+                    exec "${SCRIPT_DIR}/scripts/monitor_install.sh" "$input" "$opts"
                 else
-                    exec "${SCRIPT_DIR}/monitor_install.sh" "$input"
+                    exec "${SCRIPT_DIR}/scripts/monitor_install.sh" "$input"
                 fi
             fi
             ;;
