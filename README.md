@@ -4,7 +4,7 @@ A comprehensive toolkit to monitor, analyze, and recreate Linux installations wi
 
 ## 🎯 Quick Start
 
-For your **ADMORE2024r0_Linux.tar.gz** file (or any tar.gz with .run installer):
+For **ADMORE2024r0_Linux.tar.gz** (or any tar.gz with .run installer):
 
 ```bash
 cd /home/Gagan/work/InstallMonitor
@@ -17,16 +17,17 @@ That's it! The tool will automatically:
 - ✅ Log all files, directories, and environment changes
 - ✅ Generate ready-to-use InstallBuilder XML configuration
 
+---
+
 ## 📁 Project Structure
 
 ```
 InstallMonitor/
 ├── install_monitor.sh              ← Main tool (use this!)
-├── START_HERE.md                   ← Read this first
 ├── README.md                       ← This file
 │
-├── scripts/                        ← Specialized monitoring scripts
-│   ├── monitor_run_installer.sh    - For .run installers
+├── scripts/                        ← Specialized monitoring tools
+│   ├── monitor_run_installer.sh    - For .run installers (ADMORE)
 │   ├── monitor_install.sh          - For regular tar.gz
 │   └── analyze_existing_install.sh - For installed apps
 │
@@ -38,13 +39,20 @@ InstallMonitor/
     └── ADMORE_EXAMPLE.md           - Complete ADMORE walkthrough
 ```
 
+---
+
 ## 🚀 Usage
 
-### Universal Tool (Recommended)
+### Main Tool (Recommended)
 
 ```bash
 # Automatically detects installer type
 ./install_monitor.sh <file_or_directory> [options]
+
+# Examples
+./install_monitor.sh ADMORE2024r0_Linux.tar.gz
+./install_monitor.sh app.tar.gz '--mode unattended'
+./install_monitor.sh /opt/installed-app
 ```
 
 ### Specialized Tools
@@ -60,25 +68,126 @@ InstallMonitor/
 ./scripts/analyze_existing_install.sh /opt/myapp
 ```
 
+---
+
 ## 📊 What You Get
 
 After monitoring, you'll get a timestamped directory with:
 
+### Essential Files
+
 | File | Description |
 |------|-------------|
-| `installbuilder_recipe.txt` | **Main output** - Complete InstallBuilder guide |
+| `installbuilder_recipe.txt` | **START HERE** - Complete InstallBuilder guide |
 | `files_installed.log` | Every file installed with full paths |
 | `directories_created.log` | All directories created |
 | `environment_changes.log` | PATH, variables, aliases added |
 | `installer_output.log` | Complete installer output |
 | `install_directory.txt` | Detected installation location |
+| `strace_output.log` | System calls (if strace available) |
 
-## 📖 Documentation
+### Quick Commands
 
-1. **[START_HERE.md](START_HERE.md)** - Complete workflow and examples
-2. **[docs/QUICK_START.md](docs/QUICK_START.md)** - Quick reference guide
-3. **[examples/ADMORE_EXAMPLE.md](examples/ADMORE_EXAMPLE.md)** - Detailed ADMORE example
-4. **[docs/README_INSTALL_MONITORING.md](docs/README_INSTALL_MONITORING.md)** - Full technical docs
+```bash
+# View the InstallBuilder recipe
+cat run_install_logs_*/installbuilder_recipe.txt
+
+# See where it installed
+cat run_install_logs_*/install_directory.txt
+
+# List all installed files
+cat run_install_logs_*/files_installed.log
+
+# Check environment changes
+cat run_install_logs_*/environment_changes.log
+```
+
+---
+
+## 📝 Complete Workflow
+
+### 1️⃣ Monitor Installation
+
+```bash
+./install_monitor.sh ADMORE2024r0_Linux.tar.gz
+```
+
+### 2️⃣ Review Results
+
+```bash
+cat run_install_logs_*/installbuilder_recipe.txt
+cat run_install_logs_*/install_directory.txt
+```
+
+### 3️⃣ Extract Application Files
+
+The .run file contains the real application. Extract it:
+
+```bash
+# Method 1: Using installer's extract option
+./ADM-2024.0-installer.run --noexec --target=admore_files/
+
+# Method 2: Manual extraction (if Method 1 fails)
+SKIP=$(awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' ADM-2024.0-installer.run)
+tail -n +$SKIP ADM-2024.0-installer.run | tar xz -C admore_files/
+```
+
+### 4️⃣ Create InstallBuilder Project
+
+```bash
+# Create project structure
+mkdir -p my-admore-installer/files
+cd my-admore-installer
+
+# Copy application files
+cp -r ../admore_files/* files/
+# OR copy from installed location
+cp -r /opt/admore/* files/
+```
+
+### 5️⃣ Create installer-template.xml
+
+Use the XML snippets from `installbuilder_recipe.txt`:
+
+```xml
+<project>
+    <shortName>admore</shortName>
+    <fullName>ADMORE 2024</fullName>
+    <version>2024.0</version>
+
+    <componentList>
+        <component>
+            <name>default</name>
+            <folderList>
+                <folder>
+                    <destination>${installdir}/bin</destination>
+                    <name>binfiles</name>
+                </folder>
+                <folder>
+                    <destination>${installdir}/lib</destination>
+                    <name>libfiles</name>
+                </folder>
+            </folderList>
+        </component>
+    </componentList>
+
+    <postInstallationActionList>
+        <addEnvironmentVariable>
+            <name>PATH</name>
+            <value>${installdir}/bin:${env(PATH)}</value>
+        </addEnvironmentVariable>
+    </postInstallationActionList>
+</project>
+```
+
+### 6️⃣ Build and Test
+
+```bash
+builder build installer-template.xml
+./your-installer.run --prefix=/tmp/test-install
+```
+
+---
 
 ## 🔧 Features
 
@@ -90,34 +199,16 @@ After monitoring, you'll get a timestamped directory with:
 - **Profile Monitoring** - Detects .bashrc, .profile modifications
 - **No Guesswork** - Everything documented and logged
 
-## 📝 Examples
+---
 
-### Monitor ADMORE Installation
-```bash
-./install_monitor.sh ADMORE2024r0_Linux.tar.gz
-```
+## 📋 Supported Formats
 
-### With Silent Installation
-```bash
-./install_monitor.sh app.tar.gz '--mode unattended --prefix=/opt/app'
-```
+- ✅ `.tar.gz` containing `.run` installer
+- ✅ `.tar.gz` with `install.sh` or `setup.sh`
+- ✅ `.tar.bz2` archives
+- ✅ Existing installation directories
 
-### Analyze Existing Installation
-```bash
-./install_monitor.sh /opt/installed-app
-```
-
-### View Results
-```bash
-# Read the InstallBuilder recipe
-cat run_install_logs_*/installbuilder_recipe.txt
-
-# See where it installed
-cat run_install_logs_*/install_directory.txt
-
-# List all files
-cat run_install_logs_*/files_installed.log
-```
+---
 
 ## 🛠️ Requirements
 
@@ -132,42 +223,8 @@ cat run_install_logs_*/files_installed.log
   sudo apt-get install strace  # Ubuntu/Debian
   sudo yum install strace      # RHEL/CentOS
   ```
-- **tree** - For better directory visualization
 
-## 🔄 Workflow
-
-1. **Monitor Installation**
-   ```bash
-   ./install_monitor.sh myapp.tar.gz
-   ```
-
-2. **Review Recipe**
-   ```bash
-   cat run_install_logs_*/installbuilder_recipe.txt
-   ```
-
-3. **Extract Application Files**
-   ```bash
-   # Follow instructions in the recipe
-   ```
-
-4. **Create InstallBuilder Project**
-   ```bash
-   mkdir my-installer/files
-   cp -r extracted/* my-installer/files/
-   ```
-
-5. **Build Installer**
-   ```bash
-   builder build installer-template.xml
-   ```
-
-## 📋 Supported Formats
-
-- ✅ `.tar.gz` containing `.run` installer
-- ✅ `.tar.gz` with `install.sh` or `setup.sh`
-- ✅ `.tar.bz2` archives
-- ✅ Existing installation directories
+---
 
 ## 🐛 Troubleshooting
 
@@ -192,6 +249,16 @@ cat run_install_logs_*/install_directory.txt
 find / -name "*myapp*" -type d 2>/dev/null
 ```
 
+---
+
+## 📖 Documentation
+
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** - Quick reference guide
+- **[examples/ADMORE_EXAMPLE.md](examples/ADMORE_EXAMPLE.md)** - Complete ADMORE walkthrough
+- **[docs/README_INSTALL_MONITORING.md](docs/README_INSTALL_MONITORING.md)** - Full technical documentation
+
+---
+
 ## 📦 Output Directories
 
 Monitoring creates timestamped directories to preserve history:
@@ -200,29 +267,38 @@ Monitoring creates timestamped directories to preserve history:
 - `install_logs_YYYYMMDD_HHMMSS/` - From generic monitoring
 - `analysis_YYYYMMDD_HHMMSS/` - From existing install analysis
 
-## 🤝 Contributing
-
-This is a utility project. Feel free to:
-- Report issues
-- Suggest improvements
-- Add support for new installer types
+---
 
 ## 📄 License
 
 Free to use and modify for your projects.
 
-## 🎓 Learn More
+---
 
-- Read [START_HERE.md](START_HERE.md) for complete workflow
-- Check [examples/ADMORE_EXAMPLE.md](examples/ADMORE_EXAMPLE.md) for your use case
-- See [docs/QUICK_START.md](docs/QUICK_START.md) for quick reference
+## 🎓 Examples
+
+### Monitor ADMORE Installation
+```bash
+./install_monitor.sh ADMORE2024r0_Linux.tar.gz
+```
+
+### With Silent Installation
+```bash
+./install_monitor.sh app.tar.gz '--mode unattended --prefix=/opt/app'
+```
+
+### Analyze Existing Installation
+```bash
+./install_monitor.sh /opt/installed-app
+```
 
 ---
 
-**Ready to monitor your installation? Just run:**
+**Ready to monitor your installation?**
 
 ```bash
-./install_monitor.sh ADMORE2024r0_Linux.tar.gz
+cd /home/Gagan/work/InstallMonitor
+./install_monitor.sh /path/to/ADMORE2024r0_Linux.tar.gz
 ```
 
 🚀 **Happy building with InstallBuilder!**
