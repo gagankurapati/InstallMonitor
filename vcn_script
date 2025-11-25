@@ -1,0 +1,20 @@
+# Create proper xstartup script
+cat > ~/.vnc/xstartup << 'EOF'
+#!/bin/sh
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+export XKL_XMODMAP_DISABLE=1
+
+# Start dbus
+if [ -x /usr/bin/dbus-launch ]; then
+    eval `dbus-launch --sh-syntax --exit-with-session`
+fi
+
+# Start GNOME Desktop
+exec /usr/bin/gnome-session
+EOF
+
+chmod +x ~/.vnc/xstartup
+
+# Start VNC with explicit geometry
+vncserver :1 -geometry 1920x1080 -depth 24 -localhost no
