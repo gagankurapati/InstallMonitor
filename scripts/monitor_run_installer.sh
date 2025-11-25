@@ -263,10 +263,10 @@ run_installer() {
         print_msg "${BLUE}" "Running with strace (this will be slower but more detailed)..."
         strace -f -e trace=open,openat,creat,unlink,mkdir,chmod,chown,execve,clone \
                -o "$STRACE_LOG" \
-               $install_cmd 2>&1 | tee "$INSTALLER_OUTPUT"
+               bash -c "$install_cmd" 2>&1 | tee "$INSTALLER_OUTPUT"
     else
         # Without strace
-        $install_cmd 2>&1 | tee "$INSTALLER_OUTPUT"
+        bash -c "$install_cmd" 2>&1 | tee "$INSTALLER_OUTPUT"
     fi
 
     local exit_code=${PIPESTATUS[0]}
