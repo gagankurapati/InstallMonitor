@@ -1,0 +1,110 @@
+InstallMonitor - Installation Monitoring for InstallBuilder
+═══════════════════════════════════════════════════════════
+
+📁 Project Location: /home/Gagan/work/InstallMonitor
+
+📂 Directory Structure
+═══════════════════════════════════════════════════════════
+
+InstallMonitor/
+│
+├── 📄 README.md                      Main project documentation
+├── 📄 START_HERE.md                  Quick start guide ⭐
+├── 📄 USAGE.txt                      Quick usage reference
+├── 📄 PROJECT_STRUCTURE.txt          This file
+├── 📄 .gitignore                     Git ignore rules
+│
+├── 🔧 install_monitor.sh             Main tool (use this!) ⭐
+│
+├── 📁 scripts/                       Specialized monitoring tools
+│   ├── monitor_run_installer.sh      For .run installers (ADMORE)
+│   ├── monitor_install.sh            For regular tar.gz
+│   └── analyze_existing_install.sh   For installed applications
+│
+├── 📁 docs/                          Documentation
+│   ├── QUICK_START.md                Quick reference guide
+│   └── README_INSTALL_MONITORING.md  Complete documentation
+│
+└── 📁 examples/                      Examples and tutorials
+    └── ADMORE_EXAMPLE.md             ADMORE walkthrough
+
+
+🎯 Quick Commands
+═══════════════════════════════════════════════════════════
+
+Change to project directory:
+  $ cd /home/Gagan/work/InstallMonitor
+
+Monitor your ADMORE file:
+  $ ./install_monitor.sh /path/to/ADMORE2024r0_Linux.tar.gz
+
+View results:
+  $ cat run_install_logs_*/installbuilder_recipe.txt
+
+Read documentation:
+  $ cat START_HERE.md
+
+
+📊 Output Directories (Created After Monitoring)
+═══════════════════════════════════════════════════════════
+
+run_install_logs_YYYYMMDD_HHMMSS/    From .run installers
+install_logs_YYYYMMDD_HHMMSS/        From generic monitoring  
+analysis_YYYYMMDD_HHMMSS/            From existing installs
+
+
+🔧 All Tools Available
+═══════════════════════════════════════════════════════════
+
+1. install_monitor.sh                 Universal launcher ⭐
+   - Auto-detects installer type
+   - Easiest to use
+
+2. scripts/monitor_run_installer.sh   For .run installers
+   - Specialized for ADMORE-style installers
+   - Uses strace for detailed monitoring
+
+3. scripts/monitor_install.sh         For regular tar.gz
+   - For install.sh, setup.sh scripts
+   - General purpose monitoring
+
+4. scripts/analyze_existing_install.sh  For installed apps
+   - Analyzes without reinstalling
+   - Creates InstallBuilder mapping
+
+
+📚 Documentation Files
+═══════════════════════════════════════════════════════════
+
+Getting Started:
+  ✓ START_HERE.md               Complete workflow
+  ✓ USAGE.txt                   Quick reference
+  ✓ README.md                   Project overview
+
+Detailed Guides:
+  ✓ docs/QUICK_START.md         Commands cheat sheet
+  ✓ docs/README_INSTALL_MONITORING.md  Full documentation
+
+Examples:
+  ✓ examples/ADMORE_EXAMPLE.md  Your specific use case
+
+
+✨ Key Features
+═══════════════════════════════════════════════════════════
+
+✅ Automatic installer detection
+✅ Complete file and directory tracking
+✅ Environment variable monitoring
+✅ Shell profile change detection
+✅ strace integration for detailed analysis
+✅ InstallBuilder XML generation
+✅ Timestamped outputs (no overwriting)
+✅ Support for .run, .tar.gz, directories
+
+
+🚀 Ready to Use!
+═══════════════════════════════════════════════════════════
+
+cd /home/Gagan/work/InstallMonitor
+./install_monitor.sh /path/to/ADMORE2024r0_Linux.tar.gz
+

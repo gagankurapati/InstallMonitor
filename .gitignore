@@ -1,0 +1,49 @@
+# Ignore monitoring output directories
+run_install_logs_*/
+install_logs_*/
+analysis_*/
+
+# Ignore test files and archives
+*.tar.gz
+*.tar.bz2
+*.tgz
+*.tbz
+*.run
+*.zip
+
+# Ignore temporary files
+*.tmp
+*.log
+.DS_Store
+*~
+*.swp
+*.swo
+
+# Ignore extracted directories
+extracted/
+admore_extracted/
+*_extracted/
+_install/
+_logs/
+_artifactory/
+
+# Keep examples clean
+examples/*.tar.gz
+examples/*.run
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE specific
+.vscode/
+.idea/
+*.sublime-*
+
+# Python cache (if any scripts generate)
+__pycache__/
+*.pyc
+
+# Backup files
+*.bak
+*.backup
